@@ -47,7 +47,14 @@ class Deduplicador:
         """
         rut = (datos.rut_cliente or "").strip()
         numero_operacion = str(datos.numero_operacion or "").strip()
-        monto = f"{float(datos.monto_reclamado):.2f}"
+
+        valor_monto = datos.monto_reclamado
+        if isinstance(valor_monto, (int, float)):
+            # Normaliza int/float al mismo formato para que representen el mismo hash
+            monto = f"{float(valor_monto):.2f}"
+        else:
+            # Valor no numérico (ej. PENDIENTE_REVISION): usar tal cual
+            monto = str(valor_monto or "").strip()
 
         contenido = f"{rut}|{numero_operacion}|{monto}"
         hash_dedup = hashlib.sha256(contenido.encode("utf-8")).hexdigest()
