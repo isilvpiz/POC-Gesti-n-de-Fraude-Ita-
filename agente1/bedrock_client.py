@@ -96,6 +96,18 @@ Texto del formulario:
 """
 
 
+def datos_reclamo_pendiente() -> DatosReclamo:
+    """
+    Construye un DatosReclamo con todos los campos requeridos en
+    PENDIENTE_REVISION y los opcionales vacíos.
+
+    Útil para casos que no llegan a invocar Bedrock (ej. sin adjunto PDF, R1.4).
+    """
+    valores: dict[str, str] = {campo: PENDIENTE_REVISION for campo in CAMPOS_REQUERIDOS}
+    valores.update({campo: "" for campo in CAMPOS_OPCIONALES})
+    return DatosReclamo(**valores)
+
+
 class ClienteBedrock:
     """Cliente para extracción de datos de reclamo vía Bedrock Converse API."""
 
@@ -155,6 +167,4 @@ class ClienteBedrock:
 
     def _datos_pendientes_revision(self) -> DatosReclamo:
         """Construye un DatosReclamo con todos los campos requeridos pendientes."""
-        valores: dict[str, str] = {campo: PENDIENTE_REVISION for campo in CAMPOS_REQUERIDOS}
-        valores.update({campo: "" for campo in CAMPOS_OPCIONALES})
-        return DatosReclamo(**valores)
+        return datos_reclamo_pendiente()
