@@ -90,7 +90,8 @@ def test_pipeline_completo_4_correos(entorno: dict[str, Path], mocker) -> None:
         _datos(numero_operacion="OP-001", canal_venta="No presencial", tiene_3ds="No"),
         _datos(numero_operacion="OP-002", canal_venta="No presencial", tiene_3ds="Sí"),
         _datos(numero_operacion="OP-003", nombre_comercio=PENDIENTE_REVISION),
-        _datos(numero_operacion="OP-004", canal_venta="Presencial", tiene_3ds="No"),
+        _datos(numero_operacion="OP-004", canal_venta="Presencial", tiene_3ds="No",
+               fecha_transaccion="2026-04-10", fecha_reclamo="2026-06-02"),
     ]
 
     lector = LectorCorreo()
@@ -145,6 +146,8 @@ def test_pipeline_completo_4_correos(entorno: dict[str, Path], mocker) -> None:
 
     assert decisiones_por_caso["caso_004.eml"]["aplica_chargeback"] == "—"
     assert decisiones_por_caso["caso_004.eml"]["estado_decision"] == "PENDIENTE_REVISION"
+    assert decisiones_por_caso["caso_004.eml"]["alertas"] == "FUERA_DE_PLAZO"
+    assert decisiones_por_caso["caso_004.eml"]["dias_entre_transaccion_y_reclamo"] == 53
 
     # caso_003 nunca llega a Agente 2 (PENDIENTE_REVISION en Agente 1)
     assert "caso_003.eml" not in decisiones_por_caso
