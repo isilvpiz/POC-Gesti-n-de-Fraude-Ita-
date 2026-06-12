@@ -32,6 +32,7 @@ PDFS_DIR: Path = INPUT_EMAIL_DIR.parent / "pdfs"
 PROCESADOS_DIR: Path = INPUT_EMAIL_DIR / "procesados"
 LOGS_DIR: Path = OUTPUT_DIR / "logs"
 CASOS_EXCEL_PATH: Path = OUTPUT_DIR / "casos.xlsx"
+DECISIONES_EXCEL_PATH: Path = OUTPUT_DIR / "decisiones.xlsx"
 
 # === Regla de negocio ===
 PLAZO_MAXIMO_RECLAMO_DIAS: int = int(os.getenv("PLAZO_MAXIMO_RECLAMO_DIAS", "30"))
