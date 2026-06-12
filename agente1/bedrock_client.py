@@ -17,7 +17,13 @@ import boto3
 from botocore.config import Config
 from botocore.exceptions import BotoCoreError, ClientError
 
-from agente1.config import AWS_PROFILE, AWS_REGION, BEDROCK_MAX_TOKENS, BEDROCK_MODEL_ID
+from agente1.config import (
+    AWS_PROFILE,
+    AWS_REGION,
+    BEDROCK_MAX_TOKENS,
+    BEDROCK_MODEL_ID,
+    USE_MOCK_BEDROCK,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -112,6 +118,14 @@ class ClienteBedrock:
     """Cliente para extracción de datos de reclamo vía Bedrock Converse API."""
 
     def __init__(self) -> None:
+        if USE_MOCK_BEDROCK:
+            # Modo demo: no se crea sesión AWS (ver heuristic_extractor.py)
+            logger.warning(
+                "USE_MOCK_BEDROCK=true -> usando extractor heurístico (NO Bedrock real, solo demo)"
+            )
+            self._cliente = None
+            return
+
         config = Config(retries={"max_attempts": 3, "mode": "adaptive"})
         sesion = boto3.Session(profile_name=AWS_PROFILE, region_name=AWS_REGION)
         self._cliente = sesion.client("bedrock-runtime", config=config)
@@ -127,7 +141,13 @@ class ClienteBedrock:
             DatosReclamo con los 13 campos. Si Bedrock falla (tras los
             reintentos nativos de boto3) o la respuesta es inválida,
             retorna todos los campos requeridos en PENDIENTE_REVISION (R3.3/R3.4).
+            Si USE_MOCK_BEDROCK=true, usa el extractor heurístico (modo demo).
         """
+        if USE_MOCK_BEDROCK:
+            from agente1.heuristic_extractor import extraer_datos_heuristico
+
+            return extraer_datos_heuristico(texto_pdf)
+
         mensajes = self._construir_mensajes(texto_pdf)
 
         try:

@@ -24,6 +24,15 @@ BEDROCK_MODEL_ID: str = os.getenv(
 )
 BEDROCK_MAX_TOKENS: int = int(os.getenv("BEDROCK_MAX_TOKENS", "1000"))
 
+# Modo demo: usa un extractor heurístico (regex sobre el PDF) en vez de
+# Bedrock real. Permite correr run_pipeline.py sin AWS_PROFILE.
+# Ver agente1/heuristic_extractor.py — NO es parte del design.md original.
+USE_MOCK_BEDROCK: bool = os.getenv("USE_MOCK_BEDROCK", "false").strip().lower() in (
+    "true",
+    "1",
+    "yes",
+)
+
 # === Directorios locales ===
 INPUT_EMAIL_DIR: Path = Path(os.getenv("INPUT_EMAIL_DIR", "input/emails"))
 OUTPUT_DIR: Path = Path(os.getenv("OUTPUT_DIR", "output"))
